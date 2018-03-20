@@ -3,6 +3,7 @@ using EngTimesheetApi.Interfaces;
 using EngTimesheetApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,16 +16,18 @@ namespace EngTimesheetApi.Services
 		protected int _timeoutSeconds;
 		protected TokenServiceType _type;
 		protected TimesheetContext _context;
+		protected ILogger<TokenService> _logger;
 
 		/// <summary>
 		/// Initializes a new instance of TokenService with a specified timeout
 		/// </summary>
 		/// <param name="timeoutSeconds">An integer of how many seconds into the future the expiration of a token will be set</param>
-		public TokenService(int timeout, TokenServiceType type, TimesheetContext context)
+		public TokenService(int timeout, TokenServiceType type, TimesheetContext context, ILogger<TokenService> logger)
 		{
 			_timeoutSeconds = timeout;
 			_type = type;
 			_context = context;
+			_logger = logger;
 		}
 
 		/// <summary>
@@ -32,8 +35,9 @@ namespace EngTimesheetApi.Services
 		/// If there was already a token for the id, it is overwritten.
 		/// </summary>
 		/// <param name="id">An integer of the id to generate a token for</param>
+		/// <param name="singleUse">If true, then the token can only be used once</param>
 		/// <returns></returns>
-		public async Task<string> NewTokenAsync(int id)
+		public async Task<string> NewTokenAsync(int id, bool singleUse)
 		{
 			Token token = await _context.Tokens.Include(x => x.User).SingleOrDefaultAsync(x => x.User.Id == id);
 
@@ -42,7 +46,8 @@ namespace EngTimesheetApi.Services
 				token = new Token
 				{
 					User = await _context.Users.SingleAsync(x => x.Id == id),
-					Type = _type
+					Type = _type,
+					SingleUse = true
 				};
 			}
 
@@ -67,10 +72,17 @@ namespace EngTimesheetApi.Services
 			await ClearTokensAsync();
 			// If the token is not there, then the id returned will be 0
 			Token tokenItem = await _context.Tokens.Include(x => x.User).SingleOrDefaultAsync(x => x.Type == _type && x.Value == token);
-			if(refresh && tokenItem != null)
+			if(tokenItem != null)
 			{
-				tokenItem.Expired = NewExpired();
+				if(refresh)
+				{
+					tokenItem.Expired = NewExpired();
+				} else if(tokenItem.SingleUse)
+				{
+					_context.Tokens.Remove(tokenItem);
+				}
 				await _context.SaveChangesAsync();
+
 			}
 			return tokenItem?.User.Id ?? 0;
 		}

@@ -104,7 +104,7 @@ namespace EngTimesheetApi.Controllers
 			}
 			else
 			{
-				ModelState.AddModelError("NoMatchingToken", "The provided token did not match");
+				ModelState.AddModelError("NoValidToken", "The provided token is not valid");
 			}
 
 			if(ModelState.ErrorCount != 0)
