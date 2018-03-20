@@ -97,6 +97,7 @@ namespace EngTimesheetApi.Controllers
 
 				login.SetPassword(model.Password);
 
+				// Login must be updated because a new one could be created
 				_context.Update(login);
 				await _context.SaveChangesAsync();
 

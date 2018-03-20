@@ -70,7 +70,6 @@ namespace EngTimesheetApi.Services
 			if(refresh && tokenItem != null)
 			{
 				tokenItem.Expired = NewExpired();
-				_context.Update(tokenItem);
 				await _context.SaveChangesAsync();
 			}
 			return tokenItem?.User.Id ?? 0;
