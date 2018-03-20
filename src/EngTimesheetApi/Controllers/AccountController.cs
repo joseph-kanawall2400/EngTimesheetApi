@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EngTimesheetApi.Controllers
@@ -74,37 +75,44 @@ namespace EngTimesheetApi.Controllers
 		[Route("Password")]
 		public async Task<IActionResult> PasswordAsync([FromBody]AccountPasswordDTO model)
 		{
-			int userId = await _emailTokenService.GetIdAsync(model.Token);
-			if(userId != 0)
+			if(!ModelState.IsValid)
 			{
-				Login login = (await _context.Logins.Include(x => x.User).SingleOrDefaultAsync(x => x.User.Id == userId)) ?? new Login();
-				
-				// The login is not created for the user by default, so now that registering is being completed,
-				// create the new login and update the Registered field for the user
-				if(login.User == null)
-				{
-					login.User = await _context.Users.SingleOrDefaultAsync(x => x.Id == userId);
-					login.User.Registered = DateTime.Now;
-
-					// If there was no user in the database with the id, then there is something wrong
-					// because there is a token with the userId
-					if(login.User == null)
-					{
-						_logger.LogError("A user was not present when there should be an Id, Id: {0}", userId);
-						return StatusCode(500);
-					}
-				}
-
-				login.SetPassword(model.Password);
-
-				// Login must be updated because a new one could be created
-				_context.Update(login);
-				await _context.SaveChangesAsync();
-
+				return BadRequest(ModelState);
 			}
 			else
 			{
-				ModelState.AddModelError("NoValidToken", "The provided token is not valid");
+				int userId = await _emailTokenService.GetIdAsync(model.Token);
+				if(userId != 0)
+				{
+					Login login = (await _context.Logins.Include(x => x.User).SingleOrDefaultAsync(x => x.User.Id == userId)) ?? new Login();
+
+					// The login is not created for the user by default, so now that registering is being completed,
+					// create the new login and update the Registered field for the user
+					if(login.User == null)
+					{
+						login.User = await _context.Users.SingleOrDefaultAsync(x => x.Id == userId);
+						login.User.Registered = DateTime.Now;
+
+						// If there was no user in the database with the id, then there is something wrong
+						// because there is a token with the userId
+						if(login.User == null)
+						{
+							_logger.LogError("A user was not present when there should be an Id, Id: {0}", userId);
+							return StatusCode(500);
+						}
+					}
+
+					login.SetPassword(model.Password);
+
+					// Login must be updated because a new one could be created
+					_context.Update(login);
+					await _context.SaveChangesAsync();
+
+				}
+				else
+				{
+					ModelState.AddModelError("NoValidToken", "The provided token is not valid");
+				}
 			}
 
 			if(ModelState.ErrorCount != 0)
@@ -112,6 +120,49 @@ namespace EngTimesheetApi.Controllers
 				return BadRequest(ModelState);
 			}
 			return Ok();
+		}
+
+		[HttpGet]
+		[Route("Login")]
+		public async Task<IActionResult> LoginAsync([FromQuery]string username, [FromQuery]string password)
+		{
+			if(!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+			else
+			{
+				if(String.IsNullOrWhiteSpace(username))
+				{
+					ModelState.AddModelError("EmptyUsername", "Username is empty");
+				}
+
+				if(String.IsNullOrWhiteSpace(password))
+				{
+					ModelState.AddModelError("EmptyPassword", "Password is empty");
+				}
+				
+				if(ModelState.ErrorCount == 0)
+				{
+					Login login = await _context.Logins.Include(x => x.User).SingleOrDefaultAsync(x => x.User.Email == username);
+					if(login == null && !(login?.CheckPassword(password) ?? false))
+					{
+						ModelState.AddModelError("CredentialsInvalid", "Username and password do not match any registered users");
+					}else
+					{
+						return Ok(new { Token = await _emailTokenService.NewTokenAsync(login.User.Id, false) });
+					}
+				}
+			}
+
+			if(ModelState.ErrorCount != 0)
+			{
+				return BadRequest(ModelState);
+			}
+			// If execution has reached this point, then the Ok path was not reached, but there was no
+			// error added to the ModelState
+			_logger.LogError("The execution should not reach this point");
+			return StatusCode(500);
 		}
 	}
 }
