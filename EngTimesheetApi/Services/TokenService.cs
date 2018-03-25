@@ -97,6 +97,16 @@ namespace EngTimesheetApi.Services
 			return GetIdAsync(token, false);
 		}
 
+		protected async Task RemoveTokenAsync(string token)
+		{
+			Token tokenItem = await _context.Tokens.SingleOrDefaultAsync(x => x.Value == token);
+			if(tokenItem != null)
+			{
+				_context.Tokens.Remove(tokenItem);
+				await _context.SaveChangesAsync();
+			}
+		}
+
 		/// <summary>
 		/// Clears out _tokens of that have an expiration that has passed
 		/// </summary>

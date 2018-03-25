@@ -14,6 +14,7 @@ namespace EngTimesheetApi.Services
 		private int _smtpPort;
 		private string _smtpHost;
 		private string _fromAddress;
+		private string _frontEndResetUri;
 
 		public EmailTokenService(IConfiguration configuration, TokenServiceType type, TimesheetContext context, ILogger<EmailTokenService> logger)
 			: base(Convert.ToInt32(configuration["TokenTimeout"]), type, context, logger)
@@ -21,6 +22,7 @@ namespace EngTimesheetApi.Services
 			_smtpPort = Convert.ToInt32(configuration["SMTP:Port"]);
 			_smtpHost = configuration["SMTP:Host"];
 			_fromAddress = configuration["From"];
+			_frontEndResetUri = configuration["FrontEndResetUri"];
 		}
 
 		public async Task SendEmailAsync(int id, string toAddress)
@@ -36,14 +38,15 @@ namespace EngTimesheetApi.Services
 
 				MailMessage mail = new MailMessage(_fromAddress, toAddress);
 				mail.Subject = "Engineering Timesheet Password Reset";
-				mail.Body = $"The token is \"{token}\"";
+				mail.Body = $"Please reset your password at {_frontEndResetUri + token}";
 
 				client.Send(mail);
 			}
-			catch(SmtpException ex)
+			catch(Exception)
 			{
-				_logger.LogError("could not send email, {0}", ex);
-				_logger.LogInformation("TEMPORARY: {0}", token);
+				// remove the token before throwing the error up to whatever is calling this
+				await RemoveTokenAsync(token);
+				throw;
 			}
 		}
 	}

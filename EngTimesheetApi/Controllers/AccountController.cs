@@ -29,7 +29,7 @@ namespace EngTimesheetApi.Controllers
 		}
 
 		[HttpPost]
-		[Route("Register")]
+		[Route("register")]
 		public async Task<IActionResult> RegisterAsync([FromBody]AccountRegisterDTO model)
 		{
 			if(!ModelState.IsValid)
@@ -72,7 +72,35 @@ namespace EngTimesheetApi.Controllers
 		}
 
 		[HttpPost]
-		[Route("Password")]
+		[Route("password/{email}")]
+		public async Task<IActionResult> PasswordResetAsync([FromRoute]string email)
+		{
+			if(!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+			else
+			{
+				User user = await _context.Users.SingleOrDefaultAsync(x => x.Email == email);
+				if(user == null)
+				{
+					ModelState.AddModelError("UserNotExist", "A user with the email does not exist");
+				}
+				else
+				{
+					await _emailTokenService.SendEmailAsync(user.Id, user.Email);
+				}
+			}
+
+			if(ModelState.ErrorCount != 0)
+			{
+				return BadRequest(ModelState);
+			}
+			return Ok();
+		}
+
+		[HttpPost]
+		[Route("password")]
 		public async Task<IActionResult> PasswordAsync([FromBody]AccountPasswordDTO model)
 		{
 			if(!ModelState.IsValid)
@@ -91,7 +119,6 @@ namespace EngTimesheetApi.Controllers
 					if(login.User == null)
 					{
 						login.User = await _context.Users.SingleOrDefaultAsync(x => x.Id == userId);
-						login.User.Registered = DateTime.Now;
 
 						// If there was no user in the database with the id, then there is something wrong
 						// because there is a token with the userId
@@ -100,6 +127,8 @@ namespace EngTimesheetApi.Controllers
 							_logger.LogError("A user was not present when there should be an Id, Id: {0}", userId);
 							return StatusCode(500);
 						}
+
+						login.User.Registered = DateTime.Now;
 					}
 
 					login.SetPassword(model.Password);
@@ -123,7 +152,7 @@ namespace EngTimesheetApi.Controllers
 		}
 
 		[HttpGet]
-		[Route("Login")]
+		[Route("login")]
 		public async Task<IActionResult> LoginAsync([FromQuery]string username, [FromQuery]string password)
 		{
 			if(!ModelState.IsValid)
@@ -141,14 +170,15 @@ namespace EngTimesheetApi.Controllers
 				{
 					ModelState.AddModelError("EmptyPassword", "Password is empty");
 				}
-				
+
 				if(ModelState.ErrorCount == 0)
 				{
 					Login login = await _context.Logins.Include(x => x.User).SingleOrDefaultAsync(x => x.User.Email == username);
-					if(login == null && !(login?.CheckPassword(password) ?? false))
+					if(login == null || !(login?.CheckPassword(password) ?? false))
 					{
 						ModelState.AddModelError("CredentialsInvalid", "Username and password do not match any registered users");
-					}else
+					}
+					else
 					{
 						return Ok(new { Token = await _emailTokenService.NewTokenAsync(login.User.Id, false) });
 					}

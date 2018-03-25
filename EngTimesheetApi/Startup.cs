@@ -26,6 +26,13 @@ namespace EngTimesheetApi
 		{
 			services.AddMvc();
 
+			// Add CORS because the frontend is complaining about it not being there
+			services.AddCors(options => options.AddPolicy("EngTimesheetPolicy", builder =>
+			{
+				builder.AllowAnyOrigin()
+					.AllowAnyMethod()
+					.AllowAnyHeader();
+			}));
 
 			services.AddDbContext<TimesheetContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:EngTimesheet"]))
 				.AddScoped<ITokenService, TokenService>((provider) => TokenServiceFactory.CreateTokenService(Configuration, provider))
@@ -46,6 +53,7 @@ namespace EngTimesheetApi
 				app.UseDeveloperExceptionPage();
 			}
 
+			app.UseCors("EngTimesheetPolicy");
 			app.UseMvc();
 
 			app.UseSwagger();
