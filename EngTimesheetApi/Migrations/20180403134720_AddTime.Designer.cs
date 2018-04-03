@@ -12,9 +12,10 @@ using System;
 namespace EngTimesheetApi.Migrations
 {
     [DbContext(typeof(TimesheetContext))]
-    partial class TimesheetContextModelSnapshot : ModelSnapshot
+    [Migration("20180403134720_AddTime")]
+    partial class AddTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
