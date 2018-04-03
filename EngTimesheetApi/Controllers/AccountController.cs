@@ -36,31 +36,41 @@ namespace EngTimesheetApi.Controllers
 			{
 				return BadRequest(ModelState);
 			}
-			else
-			{
-				User user = UserMapper.Map(model);
 
-				UserValidator validator = new UserValidator();
-				ValidationResult result = await validator.ValidateAsync(user);
-				if(result.IsValid)
+			User user = UserMapper.Map(model);
+
+			UserValidator validator = new UserValidator();
+			ValidationResult result = await validator.ValidateAsync(user);
+			if(result.IsValid)
+			{
+				if(!await _context.Users.AnyAsync(x => x.Email == user.Email))
 				{
-					if(!await _context.Users.AnyAsync(x => x.Email == user.Email))
+					_context.Users.Add(user);
+					await _context.SaveChangesAsync();
+					try
 					{
-						_context.Users.Add(user);
-						await _context.SaveChangesAsync();
 						await _emailTokenService.SendEmailAsync(user.Id, user.Email);
 					}
-					else
+					catch(Exception ex)
 					{
-						ModelState.AddModelError("UserEmailExists", "A user with the email already exists");
+						_logger.LogError("could not send email, {0}", ex);
+
+						_context.Users.Remove(user);
+						await _context.SaveChangesAsync();
+
+						return StatusCode(500);
 					}
 				}
 				else
 				{
-					foreach(ValidationFailure error in result.Errors)
-					{
-						ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
-					}
+					ModelState.AddModelError("UserEmailExists", "A user with the email already exists");
+				}
+			}
+			else
+			{
+				foreach(ValidationFailure error in result.Errors)
+				{
+					ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
 				}
 			}
 
@@ -79,17 +89,15 @@ namespace EngTimesheetApi.Controllers
 			{
 				return BadRequest(ModelState);
 			}
+
+			User user = await _context.Users.SingleOrDefaultAsync(x => x.Email == email);
+			if(user == null)
+			{
+				ModelState.AddModelError("UserNotExist", "A user with the email does not exist");
+			}
 			else
 			{
-				User user = await _context.Users.SingleOrDefaultAsync(x => x.Email == email);
-				if(user == null)
-				{
-					ModelState.AddModelError("UserNotExist", "A user with the email does not exist");
-				}
-				else
-				{
-					await _emailTokenService.SendEmailAsync(user.Id, user.Email);
-				}
+				await _emailTokenService.SendEmailAsync(user.Id, user.Email);
 			}
 
 			if(ModelState.ErrorCount != 0)
@@ -107,42 +115,41 @@ namespace EngTimesheetApi.Controllers
 			{
 				return BadRequest(ModelState);
 			}
-			else
-			{
-				int userId = await _emailTokenService.GetIdAsync(model.Token);
-				if(userId != 0)
-				{
-					Login login = (await _context.Logins.Include(x => x.User).SingleOrDefaultAsync(x => x.User.Id == userId)) ?? new Login();
 
-					// The login is not created for the user by default, so now that registering is being completed,
-					// create the new login and update the Registered field for the user
+			int userId = await _emailTokenService.GetIdAsync(model.Token);
+			if(userId != 0)
+			{
+				Login login = (await _context.Logins.Include(x => x.User).SingleOrDefaultAsync(x => x.User.Id == userId)) ?? new Login();
+
+				// The login is not created for the user by default, so now that registering is being completed,
+				// create the new login and update the Registered field for the user
+				if(login.User == null)
+				{
+					login.User = await _context.Users.SingleOrDefaultAsync(x => x.Id == userId);
+
+					// If there was no user in the database with the id, then there is something wrong
+					// because there is a token with the userId
 					if(login.User == null)
 					{
-						login.User = await _context.Users.SingleOrDefaultAsync(x => x.Id == userId);
-
-						// If there was no user in the database with the id, then there is something wrong
-						// because there is a token with the userId
-						if(login.User == null)
-						{
-							_logger.LogError("A user was not present when there should be an Id, Id: {0}", userId);
-							return StatusCode(500);
-						}
-
-						login.User.Registered = DateTime.Now;
+						_logger.LogError("A user was not present when there should be an Id, Id: {0}", userId);
+						return StatusCode(500);
 					}
 
-					login.SetPassword(model.Password);
-
-					// Login must be updated because a new one could be created
-					_context.Update(login);
-					await _context.SaveChangesAsync();
-
+					login.User.Registered = DateTime.Now;
 				}
-				else
-				{
-					ModelState.AddModelError("NoValidToken", "The provided token is not valid");
-				}
+
+				login.SetPassword(model.Password);
+
+				// Login must be updated because a new one could be created
+				_context.Update(login);
+				await _context.SaveChangesAsync();
+
 			}
+			else
+			{
+				ModelState.AddModelError("NoValidToken", "The provided token is not valid");
+			}
+
 
 			if(ModelState.ErrorCount != 0)
 			{
@@ -159,29 +166,27 @@ namespace EngTimesheetApi.Controllers
 			{
 				return BadRequest(ModelState);
 			}
-			else
+
+			if(String.IsNullOrWhiteSpace(username))
 			{
-				if(String.IsNullOrWhiteSpace(username))
-				{
-					ModelState.AddModelError("EmptyUsername", "Username is empty");
-				}
+				ModelState.AddModelError("EmptyUsername", "Username is empty");
+			}
 
-				if(String.IsNullOrWhiteSpace(password))
-				{
-					ModelState.AddModelError("EmptyPassword", "Password is empty");
-				}
+			if(String.IsNullOrWhiteSpace(password))
+			{
+				ModelState.AddModelError("EmptyPassword", "Password is empty");
+			}
 
-				if(ModelState.ErrorCount == 0)
+			if(ModelState.ErrorCount == 0)
+			{
+				Login login = await _context.Logins.Include(x => x.User).SingleOrDefaultAsync(x => x.User.Email == username);
+				if(login == null || !(login?.CheckPassword(password) ?? false))
 				{
-					Login login = await _context.Logins.Include(x => x.User).SingleOrDefaultAsync(x => x.User.Email == username);
-					if(login == null || !(login?.CheckPassword(password) ?? false))
-					{
-						ModelState.AddModelError("CredentialsInvalid", "Username and password do not match any registered users");
-					}
-					else
-					{
-						return Ok(new { Token = await _emailTokenService.NewTokenAsync(login.User.Id, false) });
-					}
+					ModelState.AddModelError("CredentialsInvalid", "Username and password do not match any registered users");
+				}
+				else
+				{
+					return Ok(new { Token = await _emailTokenService.NewTokenAsync(login.User.Id, false) });
 				}
 			}
 
