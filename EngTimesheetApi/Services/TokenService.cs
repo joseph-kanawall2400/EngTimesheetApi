@@ -97,6 +97,11 @@ namespace EngTimesheetApi.Services
 			return GetIdAsync(token, false);
 		}
 
+		public Task<bool> HasTokenAsync(string token)
+		{
+			return _context.Tokens.AnyAsync(x => x.Value == token);
+		}
+
 		protected async Task RemoveTokenAsync(string token)
 		{
 			Token tokenItem = await _context.Tokens.SingleOrDefaultAsync(x => x.Value == token);

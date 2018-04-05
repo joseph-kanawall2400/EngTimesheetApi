@@ -11,7 +11,6 @@ namespace EngTimesheetApi.Models
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
 		public Group Group { get; set; }
-		public List<Time> Times { get; set; }
 		public DateTime? Registered { get; set; }
 		public DateTime? Deactivated { get; set; }
 	}

@@ -29,18 +29,21 @@ namespace EngTimesheetApi.Controllers
 		}
 
 		[HttpPost]
-		[Route("{id:int}")]
-		public async Task<IActionResult> PostAsync([FromRoute] int id, [FromBody]UserDTO model)
+		public async Task<IActionResult> PostAsync([FromHeader]string authToken, [FromBody]UserDTO model)
 		{
 			if(!ModelState.IsValid)
 			{
 				return BadRequest(ModelState);
 			}
 
-			if(ModelState.ErrorCount != 0)
+			if(!await _tokenService.HasTokenAsync(authToken))
 			{
-				return BadRequest(ModelState);
+				return Unauthorized();
 			}
+
+			_context.Users.Update(UserMapper.Map(model));
+			await _context.SaveChangesAsync();
+
 			return Ok();
 		}
 
@@ -89,24 +92,13 @@ namespace EngTimesheetApi.Controllers
 		}
 
 		[HttpGet]
-		public async Task<IActionResult> GetAsync()
+		public IActionResult GetAsync()
 		{
 			if(!ModelState.IsValid)
 			{
 				return BadRequest(ModelState);
 			}
-
-			User user = await _context.Users.SingleOrDefaultAsync(x => x.Email == email);
-			if(user == null)
-			{
-				ModelState.AddModelError("UserNotExist", "User does not exist");
-			}
-
-			if(ModelState.ErrorCount != 0)
-			{
-				return BadRequest(ModelState);
-			}
-			return Ok(UserMapper.MapToUserDTO(user));
+			return Ok(_context.Users.Select(x => UserMapper.MapToUserDTO(x)));
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using EngTimesheetApi.Models;
+﻿using System;
+using EngTimesheetApi.Models;
 
 namespace EngTimesheetApi.Mappers
 {
@@ -14,6 +15,21 @@ namespace EngTimesheetApi.Mappers
 			};
 		}
 
+		public static User Map(UserDTO dto)
+		{
+			return new User
+			{
+				Id = dto.Id,
+				Manager = dto.Manager,
+				Email = dto.Email,
+				FirstName = dto.FirstName,
+				LastName = dto.LastName,
+				Group = dto.Group,
+				Registered = dto.Registered,
+				Deactivated = dto.Deactivated
+			};
+		}
+
 		public static UserDTO MapToUserDTO(User user)
 		{
 			return new UserDTO
@@ -24,7 +40,6 @@ namespace EngTimesheetApi.Mappers
 				FirstName = user.FirstName,
 				LastName = user.LastName,
 				Group = user.Group,
-				Times = user.Times,
 				Registered = user.Registered,
 				Deactivated = user.Deactivated
 			};
