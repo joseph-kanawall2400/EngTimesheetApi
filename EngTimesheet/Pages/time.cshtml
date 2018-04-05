@@ -1,0 +1,10 @@
+﻿@page
+@using Microsoft.AspNetCore.Http;
+@model EngTimesheet.Pages.timeModel
+@{
+    ViewData["Title"] = "time";
+}
+
+<h2>time</h2>
+
+@(HttpContext.Session.GetString("token"))
