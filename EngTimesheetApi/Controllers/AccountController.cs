@@ -8,13 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EngTimesheetApi.Controllers
 {
 	[Produces("application/json")]
-	[Route("api/Account")]
+	[Route("api/account")]
 	public class AccountController : Controller
 	{
 		private TimesheetContext _context;
