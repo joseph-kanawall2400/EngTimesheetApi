@@ -1,6 +1,6 @@
 ﻿using EngTimesheetApi.Data;
-using EngTimesheetApi.Interfaces;
-using EngTimesheetApi.Models;
+using EngTimesheetApi.Shared.Interfaces;
+using EngTimesheetApi.Shared.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;

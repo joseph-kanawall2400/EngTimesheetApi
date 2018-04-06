@@ -1,4 +1,4 @@
-﻿using EngTimesheetApi.Models;
+﻿using EngTimesheetApi.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace EngTimesheetApi.Data

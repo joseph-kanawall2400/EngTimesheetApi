@@ -1,7 +1,7 @@
-﻿using EngTimesheetApi.Models;
+﻿using EngTimesheetApi.Shared.Models;
 using FluentValidation;
 
-namespace EngTimesheetApi.Validators
+namespace EngTimesheetApi.Shared.Validators
 {
 	public class UserValidator : AbstractValidator<User>
 	{

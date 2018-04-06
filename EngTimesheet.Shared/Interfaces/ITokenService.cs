@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace EngTimesheetApi.Interfaces
+namespace EngTimesheetApi.Shared.Interfaces
 {
 	public interface ITokenService
 	{

@@ -1,6 +1,6 @@
 ﻿using EngTimesheetApi.Data;
 using EngTimesheetApi.Factories;
-using EngTimesheetApi.Interfaces;
+using EngTimesheetApi.Shared.Interfaces;
 using EngTimesheetApi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

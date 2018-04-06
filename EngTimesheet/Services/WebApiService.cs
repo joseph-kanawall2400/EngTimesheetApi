@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EngTimesheetApi.Shared.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
@@ -36,7 +37,7 @@ namespace EngTimesheet.Services
 
 		public async Task ResetPassword(string token, string password)
 		{
-			HttpResponseMessage response = await _client.PostAsync("/api/account/password", GenerateContent(new
+			HttpResponseMessage response = await _client.PostAsync("/api/account/password", GenerateContent(new AccountPasswordDTO()
 			{
 				Token = token,
 				Password = password
@@ -50,7 +51,7 @@ namespace EngTimesheet.Services
 
 		public async Task Register(string email, string firstName, string lastName)
 		{
-			HttpResponseMessage response = await _client.PostAsync("/api/account/register", GenerateContent(new
+			HttpResponseMessage response = await _client.PostAsync("/api/account/register", GenerateContent(new AccountRegisterDTO()
 			{
 				Email = email,
 				FirstName = firstName,

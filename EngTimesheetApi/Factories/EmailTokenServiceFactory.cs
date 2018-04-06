@@ -1,6 +1,6 @@
 ﻿using EngTimesheetApi.Data;
-using EngTimesheetApi.Models;
 using EngTimesheetApi.Services;
+using EngTimesheetApi.Shared.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

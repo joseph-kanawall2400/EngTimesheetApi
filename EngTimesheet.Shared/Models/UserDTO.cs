@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EngTimesheetApi.Models
+namespace EngTimesheetApi.Shared.Models
 {
 	public class UserDTO
 	{

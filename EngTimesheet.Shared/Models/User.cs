@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EngTimesheetApi.Models
+namespace EngTimesheetApi.Shared.Models
 {
 	public class User
 	{

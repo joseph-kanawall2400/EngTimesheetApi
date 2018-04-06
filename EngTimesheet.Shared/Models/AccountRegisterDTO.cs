@@ -1,4 +1,4 @@
-﻿namespace EngTimesheetApi.Models
+﻿namespace EngTimesheetApi.Shared.Models
 {
 	public class AccountRegisterDTO
 	{

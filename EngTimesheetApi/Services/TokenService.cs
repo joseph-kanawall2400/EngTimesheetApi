@@ -1,11 +1,9 @@
 ﻿using EngTimesheetApi.Data;
-using EngTimesheetApi.Interfaces;
-using EngTimesheetApi.Models;
+using EngTimesheetApi.Shared.Interfaces;
+using EngTimesheetApi.Shared.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 

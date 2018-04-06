@@ -1,8 +1,8 @@
 ﻿using EngTimesheetApi.Data;
-using EngTimesheetApi.Interfaces;
-using EngTimesheetApi.Mappers;
-using EngTimesheetApi.Models;
-using EngTimesheetApi.Validators;
+using EngTimesheetApi.Shared.Interfaces;
+using EngTimesheetApi.Shared.Mappers;
+using EngTimesheetApi.Shared.Models;
+using EngTimesheetApi.Shared.Validators;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

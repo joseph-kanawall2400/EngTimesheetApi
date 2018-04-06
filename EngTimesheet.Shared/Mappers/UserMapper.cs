@@ -1,7 +1,6 @@
-﻿using System;
-using EngTimesheetApi.Models;
+﻿using EngTimesheetApi.Shared.Models;
 
-namespace EngTimesheetApi.Mappers
+namespace EngTimesheetApi.Shared.Mappers
 {
 	public static class UserMapper
 	{

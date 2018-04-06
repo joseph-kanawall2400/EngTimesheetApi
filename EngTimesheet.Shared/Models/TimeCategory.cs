@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace EngTimesheetApi.Models
+namespace EngTimesheetApi.Shared.Models
 {
 	public enum TimeCategory
 	{
