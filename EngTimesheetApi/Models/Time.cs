@@ -1,5 +1,4 @@
-﻿using EngTimesheetApi.Extensions;
-using System;
+﻿using System;
 
 namespace EngTimesheetApi.Models
 {

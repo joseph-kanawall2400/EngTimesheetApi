@@ -10,7 +10,6 @@ namespace EngTimesheetApi.Models
 		public string Email { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
-		public Group Group { get; set; }
 		public DateTime? Registered { get; set; }
 		public DateTime? Deactivated { get; set; }
 	}

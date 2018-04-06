@@ -1,5 +1,4 @@
-﻿using EngTimesheetApi.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,7 +12,6 @@ namespace EngTimesheetApi.Models
 		public string Email { get; set; }
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
-		public Group Group { get; set; }
 		public List<Time> Times { get; set; }
 
 		private DateTime? _registered = null;

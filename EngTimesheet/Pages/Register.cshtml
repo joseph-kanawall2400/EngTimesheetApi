@@ -1,8 +1,41 @@
 ﻿@page
 @model EngTimesheet.Pages.RegisterModel
 @{
-    ViewData["Title"] = "Register";
+	ViewData["Title"] = "Register";
 }
 
 <h2>Register</h2>
 
+
+<div class="container" style="margin-top: 10px;">
+	<label style="color:red;">@Model.Message</label>
+	<form action="" method="post">
+		<div class="row">
+			<div class="col-md-3">
+				<label asp-for="Email"></label>
+				<input asp-for="Email" class="form-control" required />
+				<span class="alert-danger" asp-validation-for="Email"></span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<label asp-for="FirstName"></label>
+				<input asp-for="FirstName" class="form-control" required />
+				<span class="alert-danger" asp-validation-for="FirstName"></span>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<label asp-for="LastName"></label>
+				<input asp-for="LastName" class="form-control" required />
+				<span class="alert-danger" asp-validation-for="LastName"></span>
+			</div>
+		</div>
+		<br />
+		<div class="row">
+			<div class="col-md-3">
+				<input type="submit" value="Register" class="btn btn-primary" />
+			</div>
+		</div>
+	</form>
+</div>

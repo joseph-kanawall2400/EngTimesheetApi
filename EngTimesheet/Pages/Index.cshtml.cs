@@ -12,20 +12,18 @@ namespace EngTimesheet.Pages
 	{
 		WebApiService _webApi;
 
+		[BindProperty]
+		public string Message { get; set; }
+		[EmailAddress]
+		[BindProperty]
+		public string Email { get; set; }
+		[BindProperty]
+		public string Password { get; set; }
+
 		public IndexModel(WebApiService webApi)
 		{
 			_webApi = webApi;
 		}
-
-		[BindProperty]
-		public string Message { get; set; }
-		[Required]
-		[EmailAddress]
-		[BindProperty]
-		public string Email { get; set; }
-		[Required]
-		[BindProperty]
-		public string Password { get; set; }
 
 		public void OnGet() { }
 
