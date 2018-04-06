@@ -6,6 +6,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EngTimesheetApi", "EngTimes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EngTimesheet", "EngTimesheet\EngTimesheet.csproj", "{4545C6A5-3697-44F3-A4E1-78592F7717AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngTimesheetApi.Models", "EngTimesheetApi.Models\EngTimesheetApi.Models.csproj", "{F3F44211-D8C6-4F63-8AA5-5F27741E3F49}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,18 @@ Global
 		{4545C6A5-3697-44F3-A4E1-78592F7717AC}.Release|x64.Build.0 = Release|Any CPU
 		{4545C6A5-3697-44F3-A4E1-78592F7717AC}.Release|x86.ActiveCfg = Release|Any CPU
 		{4545C6A5-3697-44F3-A4E1-78592F7717AC}.Release|x86.Build.0 = Release|Any CPU
+		{F3F44211-D8C6-4F63-8AA5-5F27741E3F49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3F44211-D8C6-4F63-8AA5-5F27741E3F49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3F44211-D8C6-4F63-8AA5-5F27741E3F49}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F3F44211-D8C6-4F63-8AA5-5F27741E3F49}.Debug|x64.Build.0 = Debug|Any CPU
+		{F3F44211-D8C6-4F63-8AA5-5F27741E3F49}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F3F44211-D8C6-4F63-8AA5-5F27741E3F49}.Debug|x86.Build.0 = Debug|Any CPU
+		{F3F44211-D8C6-4F63-8AA5-5F27741E3F49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3F44211-D8C6-4F63-8AA5-5F27741E3F49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3F44211-D8C6-4F63-8AA5-5F27741E3F49}.Release|x64.ActiveCfg = Release|Any CPU
+		{F3F44211-D8C6-4F63-8AA5-5F27741E3F49}.Release|x64.Build.0 = Release|Any CPU
+		{F3F44211-D8C6-4F63-8AA5-5F27741E3F49}.Release|x86.ActiveCfg = Release|Any CPU
+		{F3F44211-D8C6-4F63-8AA5-5F27741E3F49}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

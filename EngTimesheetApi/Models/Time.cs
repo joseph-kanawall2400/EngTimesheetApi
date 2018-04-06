@@ -9,11 +9,11 @@ namespace EngTimesheetApi.Models
 		public TimeCategory Category { get; set; }
 		public User User { get; set; }
 
-		private DateTime _deactivated;
-		public DateTime Deactivated
+		private DateTime _created;
+		public DateTime Created
 		{
-			get => _deactivated;
-			set => _deactivated = value.FirstOfMonth();
+			get => _created;
+			set => _created = value.FirstOfMonth();
 		}
 	}
 }

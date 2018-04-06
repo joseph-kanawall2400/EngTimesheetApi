@@ -12,9 +12,10 @@ using System;
 namespace EngTimesheetApi.Migrations
 {
     [DbContext(typeof(TimesheetContext))]
-    partial class TimesheetContextModelSnapshot : ModelSnapshot
+    [Migration("20180406202047_RemoveGroup")]
+    partial class RemoveGroup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,7 +47,7 @@ namespace EngTimesheetApi.Migrations
 
                     b.Property<int>("Category");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Deactivated");
 
                     b.Property<int>("Hours");
 

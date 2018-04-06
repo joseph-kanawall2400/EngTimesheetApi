@@ -24,7 +24,6 @@ namespace EngTimesheetApi.Mappers
 				Email = dto.Email,
 				FirstName = dto.FirstName,
 				LastName = dto.LastName,
-				Group = dto.Group,
 				Registered = dto.Registered,
 				Deactivated = dto.Deactivated
 			};
@@ -39,7 +38,6 @@ namespace EngTimesheetApi.Mappers
 				Email = user.Email,
 				FirstName = user.FirstName,
 				LastName = user.LastName,
-				Group = user.Group,
 				Registered = user.Registered,
 				Deactivated = user.Deactivated
 			};
