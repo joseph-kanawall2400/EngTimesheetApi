@@ -1,7 +1,7 @@
-﻿using EngTimesheetApi.Shared.Models;
+﻿using EngTimesheet.Shared.Models;
 using System.Threading.Tasks;
 
-namespace EngTimesheetApi.Shared.Interfaces
+namespace EngTimesheet.Shared.Interfaces
 {
 	public interface ITokenService
 	{

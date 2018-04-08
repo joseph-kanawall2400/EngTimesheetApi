@@ -1,12 +1,12 @@
-﻿using EngTimesheetApi.Data;
-using EngTimesheetApi.Services;
-using EngTimesheetApi.Shared.Models;
+﻿using EngTimesheet.Data;
+using EngTimesheet.Services;
+using EngTimesheet.Shared.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace EngTimesheetApi.Factories
+namespace EngTimesheet.Factories
 {
 	public static class TokenServiceFactory
 	{

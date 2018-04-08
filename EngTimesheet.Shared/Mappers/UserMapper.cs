@@ -1,45 +1,36 @@
-﻿using EngTimesheetApi.Shared.Models;
+﻿using EngTimesheet.Shared.Models;
 
-namespace EngTimesheetApi.Shared.Mappers
+namespace EngTimesheet.Shared.Mappers
 {
 	public static class UserMapper
 	{
-		public static User Map(AccountRegisterDTO dto)
+		public static User Map(AccountRegisterDTO dto) => new User
 		{
-			return new User
-			{
-				Email = dto.Email,
-				FirstName = dto.FirstName,
-				LastName = dto.LastName
-			};
-		}
+			Email = dto.Email,
+			FirstName = dto.FirstName,
+			LastName = dto.LastName
+		};
 
-		public static User Map(UserDTO dto)
+		public static User Map(UserDTO dto) => new User
 		{
-			return new User
-			{
-				Id = dto.Id,
-				Manager = dto.Manager,
-				Email = dto.Email,
-				FirstName = dto.FirstName,
-				LastName = dto.LastName,
-				Registered = dto.Registered,
-				Deactivated = dto.Deactivated
-			};
-		}
+			Id = dto.Id,
+			Manager = dto.Manager,
+			Email = dto.Email,
+			FirstName = dto.FirstName,
+			LastName = dto.LastName,
+			Registered = dto.Registered,
+			Deactivated = dto.Deactivated
+		};
 
-		public static UserDTO MapToUserDTO(User user)
+		public static UserDTO MapToUserDTO(User user) => new UserDTO
 		{
-			return new UserDTO
-			{
-				Id = user.Id,
-				Manager = user.Manager,
-				Email = user.Email,
-				FirstName = user.FirstName,
-				LastName = user.LastName,
-				Registered = user.Registered,
-				Deactivated = user.Deactivated
-			};
-		}
+			Id = user.Id,
+			Manager = user.Manager,
+			Email = user.Email,
+			FirstName = user.FirstName,
+			LastName = user.LastName,
+			Registered = user.Registered,
+			Deactivated = user.Deactivated
+		};
 	}
 }

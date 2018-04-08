@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 
-namespace EngTimesheetApi.Shared
+namespace EngTimesheet.Shared
 {
 	public static class Extensions
 	{

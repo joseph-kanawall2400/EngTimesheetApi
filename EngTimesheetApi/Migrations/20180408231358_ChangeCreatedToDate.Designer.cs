@@ -12,8 +12,8 @@ using System;
 namespace EngTimesheet.Migrations
 {
     [DbContext(typeof(TimesheetContext))]
-    [Migration("20180406212203_ChangeTimeCreated")]
-    partial class ChangeTimeCreated
+    [Migration("20180408231358_ChangeCreatedToDate")]
+    partial class ChangeCreatedToDate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -22,7 +22,7 @@ namespace EngTimesheet.Migrations
                 .HasAnnotation("ProductVersion", "2.0.2-rtm-10011")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("EngTimesheetApi.Models.Login", b =>
+            modelBuilder.Entity("EngTimesheet.Shared.Models.Login", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -40,14 +40,14 @@ namespace EngTimesheet.Migrations
                     b.ToTable("Logins");
                 });
 
-            modelBuilder.Entity("EngTimesheetApi.Models.Time", b =>
+            modelBuilder.Entity("EngTimesheet.Shared.Models.Time", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("Category");
 
-                    b.Property<DateTime>("Created");
+                    b.Property<DateTime>("Date");
 
                     b.Property<int>("Hours");
 
@@ -60,7 +60,7 @@ namespace EngTimesheet.Migrations
                     b.ToTable("Times");
                 });
 
-            modelBuilder.Entity("EngTimesheetApi.Models.Token", b =>
+            modelBuilder.Entity("EngTimesheet.Shared.Models.Token", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -82,7 +82,7 @@ namespace EngTimesheet.Migrations
                     b.ToTable("Tokens");
                 });
 
-            modelBuilder.Entity("EngTimesheetApi.Models.User", b =>
+            modelBuilder.Entity("EngTimesheet.Shared.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -104,23 +104,23 @@ namespace EngTimesheet.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("EngTimesheetApi.Models.Login", b =>
+            modelBuilder.Entity("EngTimesheet.Shared.Models.Login", b =>
                 {
-                    b.HasOne("EngTimesheetApi.Models.User", "User")
+                    b.HasOne("EngTimesheet.Shared.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("EngTimesheetApi.Models.Time", b =>
+            modelBuilder.Entity("EngTimesheet.Shared.Models.Time", b =>
                 {
-                    b.HasOne("EngTimesheetApi.Models.User", "User")
+                    b.HasOne("EngTimesheet.Shared.Models.User", "User")
                         .WithMany("Times")
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("EngTimesheetApi.Models.Token", b =>
+            modelBuilder.Entity("EngTimesheet.Shared.Models.Token", b =>
                 {
-                    b.HasOne("EngTimesheetApi.Models.User", "User")
+                    b.HasOne("EngTimesheet.Shared.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
                 });

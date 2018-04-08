@@ -4,22 +4,22 @@ using System.Collections.Generic;
 
 namespace EngTimesheet.Migrations
 {
-    public partial class ChangeTimeCreated : Migration
+    public partial class ChangeCreatedToDate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameColumn(
-                name: "Deactivated",
+                name: "Created",
                 table: "Times",
-                newName: "Created");
+                newName: "Date");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameColumn(
-                name: "Created",
+                name: "Date",
                 table: "Times",
-                newName: "Deactivated");
+                newName: "Created");
         }
     }
 }

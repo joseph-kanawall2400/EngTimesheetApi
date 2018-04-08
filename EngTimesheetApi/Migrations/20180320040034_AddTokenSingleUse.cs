@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace EngTimesheetApi.Migrations
+namespace EngTimesheet.Migrations
 {
     public partial class AddTokenSingleUse : Migration
     {

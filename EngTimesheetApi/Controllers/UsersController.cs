@@ -1,17 +1,18 @@
-﻿using EngTimesheetApi.Data;
-using EngTimesheetApi.Shared.Interfaces;
-using EngTimesheetApi.Shared.Mappers;
-using EngTimesheetApi.Shared.Models;
-using EngTimesheetApi.Shared.Validators;
+﻿using EngTimesheet.Data;
+using EngTimesheet.Shared;
+using EngTimesheet.Shared.Interfaces;
+using EngTimesheet.Shared.Mappers;
+using EngTimesheet.Shared.Models;
+using EngTimesheet.Shared.Validators;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EngTimesheetApi.Controllers
+namespace EngTimesheet.Controllers
 {
 	[Produces("application/json")]
 	[Route("api/users")]
@@ -26,6 +27,22 @@ namespace EngTimesheetApi.Controllers
 			_context = context;
 			_tokenService = tokenService;
 			_logger = logger;
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> GetAsync([FromHeader]string authToken)
+		{
+			if(!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+
+			if(!await _tokenService.HasTokenAsync(authToken))
+			{
+				return Unauthorized();
+			}
+
+			return Ok(_context.Users.Select(x => UserMapper.MapToUserDTO(x)));
 		}
 
 		[HttpPost]
@@ -83,8 +100,8 @@ namespace EngTimesheetApi.Controllers
 		}
 
 		[HttpGet]
-		[Route("{id:int}")]
-		public async Task<IActionResult> GetIdAsync([FromHeader]string authToken, [FromRoute]int id)
+		[Route("{id:int}/times")]
+		public async Task<IActionResult> GetIdTimesAsync([FromHeader]string authToken, [FromRoute]int id)
 		{
 			if(!ModelState.IsValid)
 			{
@@ -96,7 +113,7 @@ namespace EngTimesheetApi.Controllers
 				return Unauthorized();
 			}
 
-			User user = await _context.Users.SingleOrDefaultAsync(x => x.Id == id);
+			User user = await _context.Users.Include(x => x.Times).SingleOrDefaultAsync(x => x.Id == id);
 			if(user == null)
 			{
 				ModelState.AddModelError("UserNotExist", "User does not exist");
@@ -107,11 +124,12 @@ namespace EngTimesheetApi.Controllers
 			{
 				return BadRequest(ModelState);
 			}
-			return Ok(UserMapper.MapToUserDTO(user));
+			return Ok(TimeMapper.MapToTimeDTO(user));
 		}
 
-		[HttpGet]
-		public async Task<IActionResult> GetAsync([FromHeader]string authToken)
+		[HttpPost]
+		[Route("{id:int}/times")]
+		public async Task<IActionResult> PostIdTimesAsync([FromHeader]string authToken, [FromRoute]int id, [FromBody]TimeDTO model)
 		{
 			if(!ModelState.IsValid)
 			{
@@ -123,7 +141,72 @@ namespace EngTimesheetApi.Controllers
 				return Unauthorized();
 			}
 
-			return Ok(_context.Users.Select(x => UserMapper.MapToUserDTO(x)));
+			User user = await _context.Users.Include(x => x.Times).SingleOrDefaultAsync(x => x.Id == id);
+			if(user == null)
+			{
+				ModelState.AddModelError("UserNotExist", "User does not exist");
+			}
+			else
+			{
+				Time time = user.Times.SingleOrDefault(x => x.Category == model.Category && x.Date == model.Date.FirstOfMonth());
+
+				if(time == null)
+				{
+					user.Times.Add(TimeMapper.Map(model));
+				}
+				else
+				{
+					int index = user.Times.IndexOf(time);
+					user.Times[index] = TimeMapper.Map(model, time);
+				}
+
+				try
+				{
+					_context.Users.Update(user);
+					await _context.SaveChangesAsync();
+				}
+				catch(Exception ex)
+				{
+					ModelState.AddModelError("Error", ex.Message);
+				}
+			}
+
+
+			if(ModelState.ErrorCount != 0)
+			{
+				return BadRequest(ModelState);
+			}
+			return Ok();
 		}
+
+		[HttpGet]
+		[Route("{id:int}/times/{date:datetime}")]
+		public async Task<IActionResult> GetIdTimesAsync([FromHeader]string authToken, [FromRoute]int id, [FromRoute]DateTime date)
+		{
+			if(!ModelState.IsValid)
+			{
+				return BadRequest(ModelState);
+			}
+
+			if(!await _tokenService.HasTokenAsync(authToken))
+			{
+				return Unauthorized();
+			}
+
+			User user = await _context.Users.Include(x => x.Times).SingleOrDefaultAsync(x => x.Id == id);
+			if(user == null)
+			{
+				ModelState.AddModelError("UserNotExist", "User does not exist");
+			}
+
+
+			if(ModelState.ErrorCount != 0)
+			{
+				return BadRequest(ModelState);
+			}
+			return Ok(TimeMapper.MapToTimeDTO(user).Where(x => x.Date == date.FirstOfMonth()));
+		}
+
+		private User GetUser(int id) => _context.Users.SingleOrDefault(x => x.Id == id);
 	}
 }

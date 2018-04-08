@@ -1,13 +1,13 @@
-﻿using EngTimesheetApi.Data;
-using EngTimesheetApi.Shared.Interfaces;
-using EngTimesheetApi.Shared.Models;
+﻿using EngTimesheet.Data;
+using EngTimesheet.Shared.Interfaces;
+using EngTimesheet.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EngTimesheetApi.Services
+namespace EngTimesheet.Services
 {
 	public class TokenService : ITokenService
 	{

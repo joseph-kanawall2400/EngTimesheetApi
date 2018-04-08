@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace EngTimesheetApi.Shared.Interfaces
+namespace EngTimesheet.Shared.Interfaces
 {
 	public interface IEmailTokenService : ITokenService
 	{

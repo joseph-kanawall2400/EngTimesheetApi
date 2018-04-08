@@ -1,7 +1,7 @@
-﻿using EngTimesheetApi.Shared.Models;
+﻿using EngTimesheet.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace EngTimesheetApi.Data
+namespace EngTimesheet.Data
 {
 	public class TimesheetContext : DbContext
 	{

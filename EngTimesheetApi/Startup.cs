@@ -1,7 +1,7 @@
-﻿using EngTimesheetApi.Data;
-using EngTimesheetApi.Factories;
-using EngTimesheetApi.Shared.Interfaces;
-using EngTimesheetApi.Services;
+﻿using EngTimesheet.Data;
+using EngTimesheet.Factories;
+using EngTimesheet.Shared.Interfaces;
+using EngTimesheet.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 
-namespace EngTimesheetApi
+namespace EngTimesheet
 {
 	public class Startup
 	{

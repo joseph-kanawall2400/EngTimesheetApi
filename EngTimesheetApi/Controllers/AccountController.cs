@@ -1,8 +1,8 @@
-﻿using EngTimesheetApi.Data;
-using EngTimesheetApi.Shared.Interfaces;
-using EngTimesheetApi.Shared.Mappers;
-using EngTimesheetApi.Shared.Models;
-using EngTimesheetApi.Shared.Validators;
+﻿using EngTimesheet.Data;
+using EngTimesheet.Shared.Interfaces;
+using EngTimesheet.Shared.Mappers;
+using EngTimesheet.Shared.Models;
+using EngTimesheet.Shared.Validators;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
-namespace EngTimesheetApi.Controllers
+namespace EngTimesheet.Controllers
 {
 	[Produces("application/json")]
 	[Route("api/account")]
