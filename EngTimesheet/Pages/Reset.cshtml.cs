@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using EngTimesheet.Services;
+﻿using EngTimesheet.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System;
+using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace EngTimesheet.Pages
 {
@@ -16,8 +13,6 @@ namespace EngTimesheet.Pages
 
 		[BindProperty]
 		public string Message { get; set; }
-		[BindProperty]
-		public string Token { get; set; }
 
 		[BindProperty]
 		public string Email { get; set; }
@@ -33,10 +28,7 @@ namespace EngTimesheet.Pages
 			_webApi = webApi;
 		}
 
-		public void OnGet(string token)
-		{
-			Token = token;
-		}
+		public void OnGet(string token) { }
 
 		public Task<IActionResult> OnPostAsync(string token)
 		{

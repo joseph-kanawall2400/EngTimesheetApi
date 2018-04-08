@@ -11,5 +11,13 @@ namespace EngTimesheetApi.Data
 		public DbSet<Time> Times { get; set; }
 
 		public TimesheetContext(DbContextOptions options) : base(options) { }
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			modelBuilder.Entity<User>().ToTable(nameof(Users));
+			modelBuilder.Entity<Token>().ToTable(nameof(Tokens));
+			modelBuilder.Entity<Login>().ToTable(nameof(Logins));
+			modelBuilder.Entity<Time>().ToTable(nameof(Times));
+		}
 	}
 }

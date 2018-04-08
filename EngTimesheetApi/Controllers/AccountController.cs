@@ -185,7 +185,8 @@ namespace EngTimesheetApi.Controllers
 				}
 				else
 				{
-					return Ok(new { Token = await _emailTokenService.NewTokenAsync(login.User.Id, false) });
+					// Login needs to be the default token type
+					return Ok(new { Token = await _emailTokenService.NewTokenAsync(login.User.Id, false, TokenServiceType.Default) });
 				}
 			}
 

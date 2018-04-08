@@ -16,10 +16,6 @@ namespace EngTimesheetApi.Services
 		protected TimesheetContext _context;
 		protected ILogger<TokenService> _logger;
 
-		/// <summary>
-		/// Initializes a new instance of TokenService with a specified timeout
-		/// </summary>
-		/// <param name="timeoutSeconds">An integer of how many seconds into the future the expiration of a token will be set</param>
 		public TokenService(int timeout, TokenServiceType type, TimesheetContext context, ILogger<TokenService> logger)
 		{
 			_timeoutSeconds = timeout;
@@ -28,14 +24,9 @@ namespace EngTimesheetApi.Services
 			_logger = logger;
 		}
 
-		/// <summary>
-		/// Generates a new token for the given id with a new expiration date.
-		/// If there was already a token for the id, it is overwritten.
-		/// </summary>
-		/// <param name="id">An integer of the id to generate a token for</param>
-		/// <param name="singleUse">If true, then the token can only be used once</param>
-		/// <returns></returns>
-		public async Task<string> NewTokenAsync(int id, bool singleUse)
+		public Task<string> NewTokenAsync(int id, bool singleUse) => NewTokenAsync(id, singleUse, null);
+
+		public async Task<string> NewTokenAsync(int id, bool singleUse, TokenServiceType? type)
 		{
 			Token token = await _context.Tokens.Include(x => x.User).SingleOrDefaultAsync(x => x.User.Id == id);
 
@@ -44,7 +35,7 @@ namespace EngTimesheetApi.Services
 				token = new Token
 				{
 					User = await _context.Users.SingleAsync(x => x.Id == id),
-					Type = _type,
+					Type = type ?? _type,
 					SingleUse = true
 				};
 			}
@@ -58,18 +49,13 @@ namespace EngTimesheetApi.Services
 			return token.Value;
 		}
 
-		/// <summary>
-		/// Returns the id matched with the token. If there is a match 
-		/// and refresh is true, the expiration date is refreshed.
-		/// </summary>
-		/// <param name="token">A string of the token generated for the id</param>
-		/// <param name="refresh">If true, the token expiration is reset</param>
-		/// <returns></returns>
-		public async Task<int> GetIdAsync(string token, bool refresh)
+		public Task<int> GetIdAsync(string token, bool refresh) => GetIdAsync(token, refresh, null);
+
+		public async Task<int> GetIdAsync(string token, bool refresh, TokenServiceType? type)
 		{
 			await ClearTokensAsync();
 			// If the token is not there, then the id returned will be 0
-			Token tokenItem = await _context.Tokens.Include(x => x.User).SingleOrDefaultAsync(x => x.Type == _type && x.Value == token);
+			Token tokenItem = await _context.Tokens.Include(x => x.User).SingleOrDefaultAsync(x => x.Type == (type ?? _type) && x.Value == token);
 			if(tokenItem != null)
 			{
 				if(refresh)
@@ -85,15 +71,16 @@ namespace EngTimesheetApi.Services
 			return tokenItem?.User.Id ?? 0;
 		}
 
-		/// <summary>
-		/// Returns the id matched with the token.
-		/// </summary>
-		/// <param name="token">A string of the token generated for the id</param>
-		/// <returns></returns>
-		public Task<int> GetIdAsync(string token)
+		public Task<int> GetIdAsync(string token) => GetIdAsync(token, null);
+
+		public Task<int> GetIdAsync(string token, TokenServiceType? type)
 		{
-			return GetIdAsync(token, false);
+			return GetIdAsync(token, false, type);
 		}
+
+		public Task<string> GetTokenAsync(int id) => GetTokenAsync(id, null);
+
+		public async Task<string> GetTokenAsync(int id, TokenServiceType? type) => (await _context.Tokens.Include(x => x.User).SingleOrDefaultAsync(x => x.Type == (type ?? _type) && x.User.Id == id)).Value;
 
 		public Task<bool> HasTokenAsync(string token)
 		{
@@ -110,9 +97,6 @@ namespace EngTimesheetApi.Services
 			}
 		}
 
-		/// <summary>
-		/// Clears out _tokens of that have an expiration that has passed
-		/// </summary>
 		private async Task ClearTokensAsync()
 		{
 			_context.Tokens.RemoveRange(_context.Tokens.Where(x => x.Expired < DateTime.Now));
