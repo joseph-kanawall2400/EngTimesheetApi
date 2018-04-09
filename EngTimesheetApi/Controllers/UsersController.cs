@@ -131,6 +131,7 @@ namespace EngTimesheet.Controllers
 		[Route("{id:int}/times")]
 		public async Task<IActionResult> PostIdTimesAsync([FromHeader]string authToken, [FromRoute]int id, [FromBody]TimeDTO model)
 		{
+			_logger.LogWarning("start:" + model.Category.ToString());
 			if(!ModelState.IsValid)
 			{
 				return BadRequest(ModelState);
@@ -172,6 +173,7 @@ namespace EngTimesheet.Controllers
 			}
 
 
+			_logger.LogWarning("end:" + model.Category.ToString());
 			if(ModelState.ErrorCount != 0)
 			{
 				return BadRequest(ModelState);

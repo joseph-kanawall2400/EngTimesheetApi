@@ -1,8 +1,146 @@
-﻿@page
+﻿@page "{date:datetime?}"
+@using EngTimesheet.Shared;
+@using EngTimesheet.Shared.Models;
 @model EngTimesheet.Pages.TimeModel
 @{
-    ViewData["Title"] = "Time";
+	ViewData["Title"] = "Time";
+	bool currentDate = DateTime.Now.FirstOfMonth() == Model.Date;
 }
 
-<h2>Time</h2>
+<form action="" method="post">
+	<table style="margin: 0px auto;">
+		<tr>
+			<td colspan="2">
+				<h2>@Model.UserModel.FullName's Time</h2>
+			</td>
+		</tr>
+		<tr style="text-align: center;">
+			<td colspan="2">
+				<a href="/time/@Model.Date.AddMonths(-1).ToString("yyyy-MM")">&lt;&lt;</a>
+				@Model.Date.ToString("yyyy-MM")
+				@if(!currentDate)
+				{
+					if(DateTime.Now.FirstOfMonth() == Model.Date.AddMonths(1).FirstOfMonth())
+					{
+						<a href="/time">&gt;&gt;</a>
+					}
+					else
+					{
+						<a href="/time/@Model.Date.AddMonths(1).ToString("yyyy-MM")">&gt;&gt;</a>
+						<a href="/time">|&gt;</a>
+
+					}
+				}
+			</td>
+		</tr>
+		@if(!String.IsNullOrWhiteSpace(Model.Message))
+		{
+			<tr>
+				<td colspan="2">
+					<label style="color:red;">@Model.Message</label>
+				</td>
+			</tr>
+		}
+		<tr>
+			<td>
+				<label>@TimeCategory.Maintenance.Pretty()</label>
+			</td>
+			<td>
+				@if(currentDate)
+				{
+					<input asp-for="Maintenance" style="width: 50px; text-align: center;" />
+				}
+				else
+				{
+					<label style="width: 50px; text-align: center;">@Model.Maintenance.ToString("0.00")</label>
+				}
+
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<label>@TimeCategory.Enhancement.Pretty()</label>
+			</td>
+			<td>
+				@if(currentDate)
+				{
+					<input asp-for="Enhancement" style="width: 50px; text-align: center;" />
+				}
+				else
+				{
+					<label style="width: 50px; text-align: center;">@Model.Enhancement.ToString("0.00")</label>
+				}
+
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<label>@TimeCategory.NewDevelopment.Pretty()</label>
+			</td>
+			<td>
+				@if(currentDate)
+				{
+					<input asp-for="NewDevelopment" style="width: 50px; text-align: center;" />
+				}
+				else
+				{
+					<label style="width: 50px; text-align: center;">@Model.NewDevelopment.ToString("0.00")</label>
+				}
+
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<label>@TimeCategory.ResearchAndDevelopment.Pretty()</label>
+			</td>
+			<td>
+				@if(currentDate)
+				{
+					<input asp-for="ResearchAndDevelopment" style="width: 50px; text-align: center;" />
+				}
+				else
+				{
+					<label style="width: 50px; text-align: center;">@Model.ResearchAndDevelopment.ToString("0.00")</label>
+				}
+
+			</td>
+		</tr>
+		@if(Model.UserModel.Manager)
+		{
+			<tr>
+				<td>
+					<label>@TimeCategory.Management.Pretty()</label>
+				</td>
+				<td>
+					@if(currentDate)
+					{
+						<input asp-for="Management" style="width: 50px; text-align: center;" />
+					}
+					else
+					{
+						<label style="width: 50px; text-align: center;">@Model.Management.ToString("0.00")</label>
+					}
+
+				</td>
+			</tr>
+		}
+		@if(currentDate)
+		{
+			<tr>
+				<td colspan="2" style="text-align:center;">
+					<input type="submit" value="Update" />
+				</td>
+			</tr>
+		}
+	</table>
+
+	@Html.HiddenFor(x => Model.MaintenanceOriginal)
+	@Html.HiddenFor(x => Model.EnhancementOriginal)
+	@Html.HiddenFor(x => Model.NewDevelopmentOriginal)
+	@Html.HiddenFor(x => Model.ResearchAndDevelopmentOriginal)
+	@if(Model.UserModel.Manager)
+	{
+		@Html.HiddenFor(x => Model.ManagementOriginal)
+	}
+</form>
 

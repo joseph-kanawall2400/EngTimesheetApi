@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -39,6 +40,19 @@ namespace EngTimesheet.Services
 				Token = token,
 				Password = password
 			}));
+			await CheckException(response);
+		}
+
+		public async Task<List<TimeDTO>> GetTimes(string token, int id, DateTime date)
+		{
+			HttpResponseMessage response = await AuthorizedGetAsync(token, $"/api/users/{id}/times/{date:yyyy-MM}");
+			await CheckException(response);
+			return JsonConvert.DeserializeObject<List<TimeDTO>>(await response.Content.ReadAsStringAsync());
+		}
+
+		public async Task UpdateTime(string token, int id, TimeDTO time)
+		{
+			HttpResponseMessage response = await AuthorizedPostAsync(token, $"/api/users/{id}/times", GenerateContent(time));
 			await CheckException(response);
 		}
 
