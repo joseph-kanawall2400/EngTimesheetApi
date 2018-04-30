@@ -6,6 +6,39 @@
 	ViewData["Title"] = "Time";
 	bool currentDate = DateTime.Now.FirstOfMonth() == Model.Date;
 }
+@section Scripts{
+	<script type="text/javascript">
+		function secondsToHours(seconds) {
+			if (seconds === undefined) {
+				return '0.00';
+			}
+			return (seconds / 3600).toFixed(2);
+		}
+
+		function fillJiraTime() {
+			$.ajax({
+				url: window.location.origin + '/api/Jira?username=' + $('#jiraUser').val()
+					+ '&password=' + encodeURIComponent($('#jiraPass').val())
+					+ '&date=@Model.Date.ToShortDateString()',
+				type: 'GET',
+				datatype: 'json',
+				cache: false,
+				success: function (data) {
+					$('#Maintenance').val(secondsToHours(data['Maintenance']));
+					$('#Enhancement').val(secondsToHours(data['Enhancement']));
+					$('#NewDevelopment').val(secondsToHours(data['New Development']));
+					$('#ResearchAndDevelopment').val(secondsToHours(data['Research And Development']));
+					$('#Management').val(secondsToHours(data['Management']));
+				}
+			});
+		}
+	</script>
+}
+
+
+@section Navbar {
+	@await Html.PartialAsync("Navbar", Model.UserModel)
+}
 
 <form action="" method="post">
 	<table style="margin: 0px auto;">
@@ -128,7 +161,22 @@
 		{
 			<tr>
 				<td colspan="2" style="text-align:center;">
-					<input type="submit" value="Update" />
+					<input type="submit" value="Update" class="btn btn-info" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" style="padding:5px;">
+					<input id="jiraUser" type="text" placeholder="Jira Username" style="width:100%;" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" style="padding:5px;">
+					<input id="jiraPass" type="text" placeholder="Jira Password" style="width:100%;" />
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" style="padding:5px;text-align:center;">
+					<input type="button" value="Pull Jira Time" class="btn btn-info" onclick="fillJiraTime()" />
 				</td>
 			</tr>
 		}

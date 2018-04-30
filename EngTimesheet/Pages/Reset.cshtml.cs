@@ -19,16 +19,22 @@ namespace EngTimesheet.Pages
 
 		[BindProperty]
 		public string Password { get; set; }
+
 		[BindProperty]
 		[DisplayName("Confirm Password")]
 		public string PasswordCheck { get; set; }
+
+		public string Token { get; set; }
 
 		public ResetModel(WebApiService webApi)
 		{
 			_webApi = webApi;
 		}
 
-		public void OnGet(string token) { }
+		public void OnGet(string token)
+		{
+			Token = token;
+		}
 
 		public Task<IActionResult> OnPostAsync(string token)
 		{

@@ -74,6 +74,13 @@ namespace EngTimesheet.Services
 			return JsonConvert.DeserializeObject<UserDTO>(await response.Content.ReadAsStringAsync());
 		}
 
+		public async Task<List<UserDTO>> GetUsers(string token)
+		{
+			HttpResponseMessage response = await AuthorizedGetAsync(token, "/api/users");
+			await CheckException(response);
+			return JsonConvert.DeserializeObject<List<UserDTO>>(await response.Content.ReadAsStringAsync());
+		}
+
 		public async Task UpdateUser(string token, UserDTO model)
 		{
 			HttpResponseMessage response = await AuthorizedPostAsync(token, "/api/users", GenerateContent(model));

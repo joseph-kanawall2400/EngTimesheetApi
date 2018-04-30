@@ -1,0 +1,131 @@
+﻿@page "{date:datetime?}"
+@model EngTimesheet.Pages.Management.ReportModel
+@using EngTimesheet.Shared;
+@using EngTimesheet.Shared.Models
+@{
+	ViewData["Title"] = "Report";
+	bool currentDate = DateTime.Now.FirstOfMonth() == Model.Date;
+}
+@section Navbar {
+	@await Html.PartialAsync("Navbar", new EngTimesheet.Shared.Models.UserDTO { Manager = true })
+}
+
+<h2>Monthly Report</h2>
+
+@if(!String.IsNullOrWhiteSpace(Model.Message))
+{
+	<div>
+		<label style="color:red;">@Model.Message</label>
+	</div>
+}
+
+<a href="/Management/Report/@Model.Date.AddMonths(-1).ToString("yyyy-MM")">&lt;&lt;</a>
+@Model.Date.ToString("yyyy-MM")
+@if(!currentDate)
+{
+	@if(DateTime.Now.FirstOfMonth() == Model.Date.AddMonths(1).FirstOfMonth())
+	{
+		<a href="/Management/Report">&gt;&gt;</a>
+	}
+	else
+	{
+		<a href="/Management/Report/@Model.Date.AddMonths(1).ToString("yyyy-MM")">&gt;&gt;</a>
+		<a href="/Management/Report">|&gt;</a>
+	}
+}
+
+@if(Model.Users.Count > 0)
+{
+	string formatDecimal(double d) => d.ToString("0.00");
+	string formatPercent(double d) => d.ToString("P1");
+
+	<h1>@Model.Date.ToString("MMMM yyyy")</h1>
+	<table id="report" class="table table-striped table-bordered">
+		<thead>
+			<tr>
+				<th class="col-lg-2">Employee</th>
+				<th colspan="2"class="col-lg-1">Maintaining Existing products</th>
+				<th class="hidden"></th>
+				<th colspan="2"class="col-lg-1">Enhancing Existing Products</th>
+				<th class="hidden"></th>
+				<th colspan="2"class="col-lg-1">New Product Development</th>
+				<th class="hidden"></th>
+				<th colspan="2"class="col-lg-1">Rsearch & Development</th>
+				<th class="hidden"></th>
+				<th colspan="2"class="col-lg-1">Management</th>
+				<th class="hidden"></th>
+				<th class="col-lg-1">Expensed</th>
+				<th colspan="2" class="col-lg-1">Capitalized</th>
+				<th class="hidden"></th>
+				<th class="col-lg-1">Total</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td></td>
+				@for(int i = 0; i < 5; i++)
+				{
+					<td class="text-center">Hours</td>
+					<td class="text-center">%</td>
+				}
+				<td class="text-center">Hours</td>
+				<td class="text-center">Hours</td>
+				<td class="text-center">%</td>
+				<td class="text-center">Hours</td>
+			</tr>
+			@foreach(UserTimeDTO user in Model.Users)
+			{
+				<tr>
+					<td>@user.User.FullName</td>
+					<td>@formatDecimal(user.Times.Amount(TimeCategory.Maintenance))</td>
+					<td>@formatPercent(user.Times.Percent(TimeCategory.Maintenance))</td>
+					<td>@formatDecimal(user.Times.Amount(TimeCategory.Enhancement))</td>
+					<td>@formatPercent(user.Times.Percent(TimeCategory.Enhancement))</td>
+					<td>@formatDecimal(user.Times.Amount(TimeCategory.NewDevelopment))</td>
+					<td>@formatPercent(user.Times.Percent(TimeCategory.NewDevelopment))</td>
+					<td>@formatDecimal(user.Times.Amount(TimeCategory.ResearchAndDevelopment))</td>
+					<td>@formatPercent(user.Times.Percent(TimeCategory.ResearchAndDevelopment))</td>
+					<td>@formatDecimal(user.Times.Amount(TimeCategory.Management))</td>
+					<td>@formatPercent(user.Times.Percent(TimeCategory.Management))</td>
+					@{
+						double expensed = user.Times.Expensed();
+						double capitalized = user.Times.Capitalized();
+						<td>@formatDecimal(expensed)</td>
+						<td>@formatDecimal(capitalized)</td>
+						<td>@formatDecimal(capitalized / (capitalized + expensed))</td>
+					}
+					<td>@formatDecimal(user.Times.Sum(x => x.Amount))</td>
+				</tr>
+			}
+			<tr><td colspan="16"></td></tr>
+			<tr>
+				<td>Department (Excluding R&amp;D)</td>
+				<td>@formatDecimal(Model.Users.Sum(TimeCategory.Maintenance))</td>
+				<td>@formatPercent(Model.Users.Percent(TimeCategory.Maintenance))</td>
+				<td>@formatDecimal(Model.Users.Sum(TimeCategory.Enhancement))</td>
+				<td>@formatPercent(Model.Users.Percent(TimeCategory.Enhancement))</td>
+				<td>@formatDecimal(Model.Users.Sum(TimeCategory.NewDevelopment))</td>
+				<td>@formatPercent(Model.Users.Percent(TimeCategory.NewDevelopment))</td>
+				<td>@formatDecimal(Model.Users.Sum(TimeCategory.ResearchAndDevelopment))</td>
+				<td>@formatPercent(Model.Users.Percent(TimeCategory.ResearchAndDevelopment))</td>
+				<td colspan="7"></td>
+			</tr>
+		</tbody>
+	</table>
+}
+else
+{
+	<h1>No times found</h1>
+}
+
+<input id="downloadButton" type="button" value="Download CSV Report" class="btn btn-info" />
+
+
+@section Scripts{
+	<script src="~/js/jquery.tabletoCSV.js"></script>
+	<script>
+		$('#downloadButton').click(function () {
+			$('#report').tableToCSV()
+		})
+	</script>
+}

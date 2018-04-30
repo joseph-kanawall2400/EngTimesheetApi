@@ -1,0 +1,58 @@
+﻿@page
+@model EngTimesheet.Pages.Management.UsersModel
+@using EngTimesheet.Shared.Models;
+@{
+	ViewData["Title"] = "Users";
+}
+@section Navbar {
+	@await Html.PartialAsync("Navbar", Model.UserModel)
+}
+
+<h2>Edit User Settings</h2>
+
+@if(!String.IsNullOrWhiteSpace(Model.Message))
+{
+	<div>
+		<label style="color:red;">@Model.Message</label>
+	</div>
+}
+
+<div>
+	<sub>To Un-Deactivate or Un-Register a user, click the x in the date box</sub>
+</div>
+
+@if(Model.Users.Count > 0)
+{
+	<form action="" method="post">
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Registered</th>
+					<th>Deactivated</th>
+					<th>Management</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for(int i = 0; i < Model.Users.Count; i++)
+				{
+				<tr>
+
+					<td>@Model.Users[i].FullName</td>
+					<td><input asp-for="Users[i].Registered" type="date" /></td>
+					<td>
+						<input asp-for="Users[i].Deactivated" type="date" />
+					</td>
+					<td><input asp-for="Users[i].Manager" /></td>
+
+					@Html.HiddenFor(x => x.Users[i].FirstName)
+					@Html.HiddenFor(x => x.Users[i].LastName)
+					@Html.HiddenFor(x => x.Users[i].Email)
+					@Html.HiddenFor(x => x.Users[i].Id)
+				</tr>
+				}
+			</tbody>
+		</table>
+		<input type="submit" value="Update Users" class="btn btn-info" />
+	</form>
+}

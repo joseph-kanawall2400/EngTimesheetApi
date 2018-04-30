@@ -5,15 +5,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EngTimesheet.Pages
 {
 	public class TimeModel : PageModel
 	{
-
 		private WebApiService _webApi;
 
 		[BindProperty]
@@ -49,7 +46,6 @@ namespace EngTimesheet.Pages
 		[BindProperty]
 		public decimal ManagementOriginal { get; set; }
 
-
 		public TimeModel(WebApiService webApi)
 		{
 			_webApi = webApi;
@@ -58,11 +54,10 @@ namespace EngTimesheet.Pages
 		public async Task<IActionResult> OnGetAsync(DateTime? date)
 		{
 			string token = HttpContext.Session.GetString("token");
-			//if(token == null)
-			//{
-			//	return RedirectToPage("/Index");
-			//}
-			token = "a8c85eb2-d085-4471-9a3e-8a2c09c92638";
+			if(token == null)
+			{
+				return RedirectToPage("/Index");
+			}
 
 			Date = date?.FirstOfMonth() ?? DateTime.Now.FirstOfMonth();
 			if(Date > DateTime.Now.FirstOfMonth())
@@ -70,9 +65,14 @@ namespace EngTimesheet.Pages
 				return Redirect("/Time");
 			}
 
+			UserModel = await _webApi.GetUser(token);
+			if(UserModel == null)
+			{
+				return RedirectToPage("/Unauthorized");
+			}
+
 			try
 			{
-				UserModel = await _webApi.GetUser(token);
 				foreach(TimeDTO time in await _webApi.GetTimes(token, UserModel.Id, Date))
 				{
 					switch(time.Category)
@@ -100,24 +100,20 @@ namespace EngTimesheet.Pages
 				Message = ex.Message;
 			}
 
-
 			return Page();
 		}
-
 
 		public async Task<IActionResult> OnPostAsync(DateTime? date)
 		{
 			string token = HttpContext.Session.GetString("token");
-			//if(token == null)
-			//{
-			//	return RedirectToPage("/Index");
-			//}
-			token = "a8c85eb2-d085-4471-9a3e-8a2c09c92638";
+			if(token == null)
+			{
+				return RedirectToPage("/Index");
+			}
 
 			Date = date?.FirstOfMonth() ?? DateTime.Now.FirstOfMonth();
 
 			UserModel = await _webApi.GetUser(token);
-
 
 			try
 			{
@@ -132,7 +128,6 @@ namespace EngTimesheet.Pages
 				Message = ex.Message;
 			}
 
-			Message = "TEST";
 			return Redirect("/Time");
 		}
 

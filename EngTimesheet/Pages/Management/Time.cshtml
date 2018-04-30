@@ -1,0 +1,72 @@
+﻿@page "{date:datetime?}"
+@model EngTimesheet.Pages.Management.TimeModel
+@using EngTimesheet.Shared;
+@using EngTimesheet.Shared.Models;
+@using System.ComponentModel;
+@{
+	ViewData["Title"] = "Time";
+	TimeCategory[] timeCategories = Enum.GetValues(typeof(TimeCategory)).Cast<TimeCategory>().ToArray();
+	bool currentDate = DateTime.Now.FirstOfMonth() == Model.Date;
+}
+@section Navbar {
+	@await Html.PartialAsync("Navbar", Model.UserModel)
+}
+
+<h2>Edit User Times</h2>
+
+@if(!String.IsNullOrWhiteSpace(Model.Message))
+{
+	<div>
+		<label style="color:red;">@Model.Message</label>
+	</div>
+}
+
+<form action="" method="post">
+	<a href="/Management/Time/@Model.Date.AddMonths(-1).ToString("yyyy-MM")">&lt;&lt;</a>
+	@Model.Date.ToString("yyyy-MM")
+	@if(!currentDate)
+	{
+		@if(DateTime.Now.FirstOfMonth() == Model.Date.AddMonths(1).FirstOfMonth())
+		{
+			<a href="/Management/Time">&gt;&gt;</a>
+		}
+		else
+		{
+			<a href="/Management/Time/@Model.Date.AddMonths(1).ToString("yyyy-MM")">&gt;&gt;</a>
+			<a href="/Management/Time">|&gt;</a>
+		}
+	}
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>User</th>
+				@foreach(TimeCategory cat in timeCategories)
+				{
+					<th>@cat.Pretty()</th>
+				}
+			</tr>
+		</thead>
+		<tbody>
+			@for(int i = 0; i < Model.Users.Count; i++)
+			{
+				<tr>
+
+					<td>@Model.Users[i].User.FullName</td>
+					@foreach(TimeCategory cat in timeCategories)
+					{
+						int catIndex = Model.Users[i].Times.FindIndex(x => x.Category == cat);
+						<td><input asp-for="Users[i].Times[catIndex].Amount" /></td>
+						@Html.HiddenFor(x => Model.Users[i].Times[catIndex].Category)
+						@Html.HiddenFor(x => Model.Users[i].Times[catIndex].Date)
+					}
+					@Html.HiddenFor(x => x.Users[i].User.FirstName)
+					@Html.HiddenFor(x => x.Users[i].User.LastName)
+					@Html.HiddenFor(x => x.Users[i].User.Id)
+				</tr>
+			}
+		</tbody>
+	</table>
+
+	<input type="submit" value="Update User Times" class="btn btn-info" />
+</form>

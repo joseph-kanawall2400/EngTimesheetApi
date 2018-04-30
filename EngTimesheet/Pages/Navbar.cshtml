@@ -1,0 +1,19 @@
+﻿@model EngTimesheet.Shared.Models.UserDTO
+
+<div class="navbar-collapse collapse">
+	<ul class="nav navbar-nav">
+		@if(Model.Manager)
+		{
+			<li>
+				<a class="dropdown-toggle" data-toggle="dropdown">Management</a>
+				<div class="dropdown-menu" style="padding:5px;">
+					<a asp-page="/Management/Report" class="dropdown-item">Report</a><br />
+					<a asp-page="/Management/Users" class="dropdown-item">Edit User Settings</a><br />
+					<a asp-page="/Management/Time" class="dropdown-item">Edit User Times</a>
+				</div>
+			</li>
+		}
+		<li><a asp-page="/Settings">Settings</a></li>
+		<li><a asp-page="/Logout">Logout</a></li>
+	</ul>
+</div>
