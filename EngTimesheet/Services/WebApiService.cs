@@ -27,10 +27,11 @@ namespace EngTimesheet.Services
 				: null;
 		}
 
-		public async Task SendPasswordEmail(string email)
+		public async Task<string> SendPasswordEmail(string email)
 		{
 			HttpResponseMessage response = await _client.PostAsync($"/api/account/password/{email}", null);
 			await CheckException(response);
+			return await response.Content.ReadAsStringAsync();
 		}
 
 		public async Task ResetPassword(string token, string password)
@@ -56,7 +57,7 @@ namespace EngTimesheet.Services
 			await CheckException(response);
 		}
 
-		public async Task Register(string email, string firstName, string lastName)
+		public async Task<string> Register(string email, string firstName, string lastName)
 		{
 			HttpResponseMessage response = await _client.PostAsync("/api/account/register", GenerateContent(new AccountRegisterDTO()
 			{
@@ -65,6 +66,7 @@ namespace EngTimesheet.Services
 				LastName = lastName
 			}));
 			await CheckException(response);
+			return await response.Content.ReadAsStringAsync();
 		}
 
 		public async Task<UserDTO> GetUser(string token)

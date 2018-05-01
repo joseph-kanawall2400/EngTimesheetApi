@@ -36,8 +36,9 @@
 
 @if(Model.Users.Count > 0)
 {
-	string formatDecimal(double d) => d.ToString("0.00");
-	string formatPercent(double d) => d.ToString("P1");
+	string formatDecimal(double d) => checkNaN(d).ToString("0.00");
+	string formatPercent(double d) => checkNaN(d).ToString("P1");
+	double checkNaN(double d) => Double.IsNaN(d) ? 0.0 : d;
 
 	<h1>@Model.Date.ToString("MMMM yyyy")</h1>
 	<table id="report" class="table table-striped table-bordered">

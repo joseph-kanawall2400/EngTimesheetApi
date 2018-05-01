@@ -4,6 +4,6 @@ namespace EngTimesheet.Shared.Interfaces
 {
 	public interface IEmailTokenService : ITokenService
 	{
-		Task SendEmailAsync(int id, string address);
+		Task<string> SendEmailAsync(int id, string address);
 	}
 }

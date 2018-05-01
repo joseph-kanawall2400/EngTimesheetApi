@@ -66,8 +66,10 @@ namespace EngTimesheet.Pages
 		{
 			try
 			{
-				await _webApi.SendPasswordEmail(Email);
-				Message = "Email was sent";
+				string token = await _webApi.SendPasswordEmail(Email);
+				Message = $"To set password go to http://engtimesheet.azurewebsites.net/reset/{token.Substring(1, token.Length - 2)}";
+				//await _webApi.SendPasswordEmail(Email)
+				//Message = "Email was sent";
 			}
 			catch(Exception ex)
 			{

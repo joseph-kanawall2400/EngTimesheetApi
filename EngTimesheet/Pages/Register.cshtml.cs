@@ -34,8 +34,9 @@ namespace EngTimesheet.Pages
 		{
 			try
 			{
-				await _webApi.Register(Email, FirstName, LastName);
-				return RedirectToPage("/index");
+				string token = await _webApi.Register(Email, FirstName, LastName);
+				Message = $"To set password go to http://engtimesheet.azurewebsites.net/reset/{token.Substring(1, token.Length - 2)}";
+				//return RedirectToPage("/index");
 			}
 			catch(Exception ex)
 			{

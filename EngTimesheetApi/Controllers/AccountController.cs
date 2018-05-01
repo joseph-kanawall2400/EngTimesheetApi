@@ -40,6 +40,7 @@ namespace EngTimesheet.Controllers
 
 			UserValidator validator = new UserValidator();
 			ValidationResult result = await validator.ValidateAsync(user);
+			string token = "";
 			if(result.IsValid)
 			{
 				if(!await _context.Users.AnyAsync(x => x.Email == user.Email))
@@ -48,7 +49,7 @@ namespace EngTimesheet.Controllers
 					await _context.SaveChangesAsync();
 					try
 					{
-						await _emailTokenService.SendEmailAsync(user.Id, user.Email);
+						token = await _emailTokenService.SendEmailAsync(user.Id, user.Email);
 					}
 					catch(Exception ex)
 					{
@@ -77,7 +78,7 @@ namespace EngTimesheet.Controllers
 			{
 				return BadRequest(ModelState);
 			}
-			return Ok();
+			return Ok(token);
 		}
 
 		[HttpPost]
@@ -90,20 +91,21 @@ namespace EngTimesheet.Controllers
 			}
 
 			User user = await _context.Users.SingleOrDefaultAsync(x => x.Email == email);
+			string token = "";
 			if(user == null)
 			{
 				ModelState.AddModelError("UserNotExist", "A user with the email does not exist");
 			}
 			else
 			{
-				await _emailTokenService.SendEmailAsync(user.Id, user.Email);
+				token = await _emailTokenService.SendEmailAsync(user.Id, user.Email);
 			}
 
 			if(ModelState.ErrorCount != 0)
 			{
 				return BadRequest(ModelState);
 			}
-			return Ok();
+			return Ok(token);
 		}
 
 		[HttpPost]

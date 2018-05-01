@@ -25,9 +25,10 @@ namespace EngTimesheet.Services
 			_frontEndResetUri = configuration["FrontEndResetUri"];
 		}
 
-		public async Task SendEmailAsync(int id, string toAddress)
+		public async Task<string> SendEmailAsync(int id, string toAddress)
 		{
 			string token = await NewTokenAsync(id, true);
+			return token;
 			try
 			{
 				SmtpClient client = new SmtpClient();
